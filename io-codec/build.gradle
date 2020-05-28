@@ -1,0 +1,13 @@
+dependencies {
+    api project(':io-archive')
+    implementation project(':io-compress-bzip2')
+    implementation project(':io-compress-lzf')
+    implementation project(':io-compress-xz')
+    implementation project(':io-compress-zlib')
+    implementation project(':io-archive-ar')
+    implementation project(':io-archive-cpio')
+    implementation project(':io-archive-dump')
+    implementation project(':io-archive-jar')
+    implementation project(':io-archive-tar')
+    implementation project(':io-archive-zip')
+}
