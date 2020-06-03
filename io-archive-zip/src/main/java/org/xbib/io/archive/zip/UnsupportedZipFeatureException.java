@@ -7,6 +7,7 @@ import java.util.zip.ZipException;
  * Exception thrown when attempting to read or write data for a zip
  * entry that uses ZIP features not supported by this library.
  */
+@SuppressWarnings("serial")
 public class UnsupportedZipFeatureException extends ZipException {
 
     private final Feature reason;

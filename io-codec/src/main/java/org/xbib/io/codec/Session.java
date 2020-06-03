@@ -7,11 +7,11 @@ import java.io.IOException;
  * operations, and being closed. Sessions must be opened before the first
  * operation and closed after the last operation.
  */
-public interface Session<P extends Packet> {
+public interface Session<P extends StringPacket> {
 
     enum Mode {
 
-        READ, WRITE, APPEND,CONTROL, DELETE;
+        READ, WRITE, APPEND, CONTROL, DELETE;
     }
 
     /**

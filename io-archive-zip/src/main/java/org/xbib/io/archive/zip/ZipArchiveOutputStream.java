@@ -562,9 +562,10 @@ public class ZipArchiveOutputStream<E extends ZipArchiveEntry> extends ArchiveOu
         raf.seek(save);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public E newArchiveEntry() {
-        return (E)new ZipArchiveEntry();
+        return (E) new ZipArchiveEntry();
     }
 
     /**

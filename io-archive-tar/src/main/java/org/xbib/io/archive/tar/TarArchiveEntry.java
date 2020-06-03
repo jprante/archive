@@ -546,6 +546,207 @@ public class TarArchiveEntry implements TarConstants, ArchiveEntry {
         parseTarHeader(header, encoding, false);
     }
 
+
+    /**
+     * Write an entry's header information to a header buffer.
+     *
+     * @param outbuf   The tar entry header buffer to fill in.
+     * @param encoding encoding to use when writing the file name.
+     * @param starMode whether to use the star/GNU tar/BSD tar
+     *                 extension for numeric fields if their value doesn't fit in the
+     *                 maximum size of standard tar archives
+     */
+    public void writeEntryHeader(byte[] outbuf, ArchiveEntryEncoding encoding, boolean starMode) throws IOException {
+        int offset = 0;
+        offset = ArchiveUtils.formatNameBytes(name, outbuf, offset, NAMELEN, encoding);
+        offset = writeEntryHeaderField(mode, outbuf, offset, MODELEN, starMode);
+        offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN, starMode);
+        offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN, starMode);
+        offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
+        offset = writeEntryHeaderField(modTime, outbuf, offset, MODTIMELEN, starMode);
+        int csOffset = offset;
+        for (int c = 0; c < CHKSUMLEN; ++c) {
+            outbuf[offset++] = (byte) ' ';
+        }
+        outbuf[offset++] = linkFlag;
+        offset = ArchiveUtils.formatNameBytes(linkName, outbuf, offset, NAMELEN, encoding);
+        offset = ArchiveUtils.formatNameBytes(MAGIC_POSIX, outbuf, offset, MAGICLEN);
+        offset = ArchiveUtils.formatNameBytes(version, outbuf, offset, VERSIONLEN);
+        offset = ArchiveUtils.formatNameBytes(userName, outbuf, offset, UNAMELEN, encoding);
+        offset = ArchiveUtils.formatNameBytes(groupName, outbuf, offset, GNAMELEN, encoding);
+        offset = writeEntryHeaderField(devMajor, outbuf, offset, DEVLEN, starMode);
+        offset = writeEntryHeaderField(devMinor, outbuf, offset, DEVLEN, starMode);
+        while (offset < outbuf.length) {
+            outbuf[offset++] = 0;
+        }
+        long chk = computeCheckSum(outbuf);
+        formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
+    }
+
+    private int writeEntryHeaderField(long value, byte[] outbuf, int offset, int length, boolean starMode) {
+        if (!starMode && (value < 0
+                || value >= (1l << (3 * (length - 1))))) {
+            // value doesn't fit into field when written as octal
+            // number, will be written to PAX header or causes an
+            // error
+            return formatLongOctalBytes(0, outbuf, offset, length);
+        }
+        return formatLongOctalOrBinaryBytes(value, outbuf, offset, length);
+    }
+
+
+    /**
+     * Write an long integer into a buffer as an octal string if this
+     * will fit, or as a binary number otherwise.
+     * <p/>
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
+     *
+     * @param value  The value to write into the buffer.
+     * @param buf    The destination buffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer.
+     * @return The updated offset.
+     * @throws IllegalArgumentException if the value (and trailer)
+     *                                  will not fit in the buffer.
+     */
+    private int formatLongOctalOrBinaryBytes(final long value, byte[] buf, final int offset, final int length) {
+        // Check whether we are dealing with UID/GID or SIZE field
+        final long maxAsOctalChar = length == UIDLEN ? MAXID : MAXSIZE;
+        final boolean negative = value < 0;
+        if (!negative && value <= maxAsOctalChar) { // OK to store as octal chars
+            return formatLongOctalBytes(value, buf, offset, length);
+        }
+        if (length < 9) {
+            formatLongBinary(value, buf, offset, length, negative);
+        }
+        formatBigIntegerBinary(value, buf, offset, length, negative);
+        buf[offset] = (byte) (negative ? 0xff : 0x80);
+        return offset + length;
+    }
+
+    private void formatLongBinary(final long value, byte[] buf, final int offset, final int length, final boolean negative) {
+        final int bits = (length - 1) * 8;
+        final long max = 1l << bits;
+        long val = Math.abs(value);
+        if (val >= max) {
+            throw new IllegalArgumentException("Value " + value +
+                    " is too large for " + length + " byte field.");
+        }
+        if (negative) {
+            val ^= max - 1;
+            val |= 0xff << bits;
+            val++;
+        }
+        for (int i = offset + length - 1; i >= offset; i--) {
+            buf[i] = (byte) val;
+            val >>= 8;
+        }
+    }
+
+    private void formatBigIntegerBinary(final long value, byte[] buf,
+                                        final int offset,
+                                        final int length,
+                                        final boolean negative) {
+        BigInteger val = BigInteger.valueOf(value);
+        final byte[] b = val.toByteArray();
+        final int len = b.length;
+        final int off = offset + length - len;
+        System.arraycopy(b, 0, buf, off, len);
+        final byte fill = (byte) (negative ? 0xff : 0);
+        for (int i = offset + 1; i < off; i++) {
+            buf[i] = fill;
+        }
+    }
+
+    /**
+     * Writes an octal value into a buffer.
+     * <p/>
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by NUL and then space.
+     *
+     * @param value  The value to convert
+     * @param buf    The destination buffer
+     * @param offset The starting offset into the buffer.
+     * @param length The size of the buffer.
+     * @return The updated value of offset, i.e. offset+length
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
+     */
+    private int formatCheckSumOctalBytes(final long value, byte[] buf, final int offset, final int length) {
+        int idx = length - 2;
+        formatUnsignedOctalString(value, buf, offset, idx);
+        buf[offset + idx++] = 0;
+        buf[offset + idx] = (byte) ' ';
+        return offset + length;
+    }
+
+    /**
+     * Write an octal long integer into a buffer.
+     * <p/>
+     * Uses {@link #formatUnsignedOctalString} to format
+     * the value as an octal string with leading zeros.
+     * The converted number is followed by a space.
+     *
+     * @param value  The value to write as octal
+     * @param buf    The destinationbuffer.
+     * @param offset The starting offset into the buffer.
+     * @param length The length of the buffer
+     * @return The updated offset
+     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer
+     */
+    private int formatLongOctalBytes(final long value, byte[] buf, final int offset, final int length) {
+        int idx = length - 1; // For space
+        formatUnsignedOctalString(value, buf, offset, idx);
+        buf[offset + idx] = (byte) ' '; // Trailing space
+        return offset + length;
+    }
+
+    /**
+     * Fill buffer with unsigned octal number, padded with leading zeroes.
+     *
+     * @param value  number to convert to octal - treated as unsigned
+     * @param buffer destination buffer
+     * @param offset starting offset in buffer
+     * @param length length of buffer to fill
+     * @throws IllegalArgumentException if the value will not fit in the buffer
+     */
+    private void formatUnsignedOctalString(final long value, byte[] buffer, final int offset, final int length) {
+        int remaining = length;
+        remaining--;
+        if (value == 0) {
+            buffer[offset + remaining--] = (byte) '0';
+        } else {
+            long val = value;
+            for (; remaining >= 0 && val != 0; --remaining) {
+                buffer[offset + remaining] = (byte) ((byte) '0' + (byte) (val & 7));
+                val = val >>> 3;
+            }
+            if (val != 0) {
+                throw new IllegalArgumentException(value + "=" + Long.toOctalString(value) + " will not fit in octal number buffer of length " + length);
+            }
+        }
+
+        for (; remaining >= 0; --remaining) { // leading zeros
+            buffer[offset + remaining] = (byte) '0';
+        }
+    }
+
+    /**
+     * Compute the checksum of a tar entry header.
+     *
+     * @param buf The tar entry's header buffer.
+     * @return The computed checksum.
+     */
+    private long computeCheckSum(final byte[] buf) {
+        long sum = 0;
+        for (byte aBuf : buf) {
+            sum += 255 & aBuf;
+        }
+        return sum;
+    }
+
     private void parseTarHeader(byte[] header, ArchiveEntryEncoding encoding, final boolean oldStyle)
             throws IOException {
         int offset = 0;

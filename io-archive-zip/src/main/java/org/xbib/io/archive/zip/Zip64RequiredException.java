@@ -8,6 +8,7 @@ import java.util.zip.ZipException;
  * support to an archive and {@link ZipArchiveOutputStream#setUseZip64
  * UseZip64} has been set to {@link Zip64Mode#Never Never}.
  */
+@SuppressWarnings("serial")
 public class Zip64RequiredException extends ZipException {
 
     /**

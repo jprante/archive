@@ -1,6 +1,5 @@
 package org.xbib.io.archive.cpio;
 
-import org.xbib.io.archive.entry.ArchiveEntry;
 import org.xbib.io.archive.stream.ArchiveInputStream;
 import org.xbib.io.archive.util.ArchiveUtils;
 
@@ -33,7 +32,7 @@ import java.io.InputStream;
  * Note: This implementation should be compatible to cpio 2.5
  */
 
-public class CpioArchiveInputStream extends ArchiveInputStream implements CpioConstants {
+public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry> implements CpioConstants {
 
     private boolean closed = false;
 
@@ -380,7 +379,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream implements CpioCo
     }
 
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
+    public CpioArchiveEntry getNextEntry() throws IOException {
         return getNextCPIOEntry();
     }
 

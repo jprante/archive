@@ -2,10 +2,10 @@ package org.xbib.io.archive.dump;
 
 import java.io.IOException;
 
-
 /**
  * Dump Archive Exception
  */
+@SuppressWarnings("serial")
 public class DumpArchiveException extends IOException {
 
     public DumpArchiveException(String msg) {

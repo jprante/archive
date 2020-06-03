@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.Date;
 
 /**
- * This class represents an entry in a Tar archive for output
+ * This class represents an entry in a Tar archive for output.
  */
 public class TarArchiveOutputEntry implements TarConstants, ArchiveEntry {
 

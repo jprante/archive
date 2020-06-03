@@ -1,9 +1,9 @@
 package org.xbib.io.codec.ar;
 
+import org.xbib.io.archive.ar.ArArchiveEntry;
 import org.xbib.io.codec.ArchiveSession;
 import org.xbib.io.archive.ar.ArArchiveInputStream;
 import org.xbib.io.archive.ar.ArArchiveOutputStream;
-import org.xbib.io.codec.Packet;
 import org.xbib.io.codec.Session;
 import org.xbib.io.codec.StringPacket;
 import java.io.InputStream;
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 /**
  * Ar Session
  */
-public class ArSession extends ArchiveSession<ArArchiveInputStream, ArArchiveOutputStream>
+public class ArSession extends ArchiveSession<ArArchiveEntry, ArArchiveInputStream, ArArchiveOutputStream>
         implements Session<StringPacket> {
 
     private final static String SUFFIX = "ar";

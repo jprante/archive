@@ -1,5 +1,6 @@
 package org.xbib.io.codec.cpio;
 
+import org.xbib.io.archive.cpio.CpioArchiveEntry;
 import org.xbib.io.codec.ArchiveSession;
 import org.xbib.io.archive.cpio.CpioArchiveInputStream;
 import org.xbib.io.archive.cpio.CpioArchiveOutputStream;
@@ -9,7 +10,7 @@ import java.io.OutputStream;
 /**
  * Cpio Session
  */
-public class CpioSession extends ArchiveSession<CpioArchiveInputStream, CpioArchiveOutputStream> {
+public class CpioSession extends ArchiveSession<CpioArchiveEntry, CpioArchiveInputStream, CpioArchiveOutputStream> {
 
     private final static String SUFFIX = "cpio";
 

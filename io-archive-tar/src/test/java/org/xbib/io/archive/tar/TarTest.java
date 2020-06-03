@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class TarTest {
 
     @Test
-    public void testTar() throws IOException {
+    public void testReadTar() throws IOException {
         InputStream in = getClass().getResourceAsStream("test.tar");
         TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(in);
         byte[] buffer = new byte[1024];

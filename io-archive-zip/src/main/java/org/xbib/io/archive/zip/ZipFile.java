@@ -317,23 +317,6 @@ public class ZipFile {
     }
 
     /**
-     * Ensures that the close method of this zipfile is called when
-     * there are no more references to it.
-     *
-     * @see #close()
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            if (!closed) {
-                close();
-            }
-        } finally {
-            super.finalize();
-        }
-    }
-
-    /**
      * Length of a "central directory" entry structure without file
      * name, extra fields or comment.
      */
@@ -370,8 +353,7 @@ public class ZipFile {
      */
     private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory()
             throws IOException {
-        HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag =
-                new HashMap<ZipArchiveEntry, NameAndComment>();
+        HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag = new HashMap<>();
 
         positionAtCentralDirectory();
 

@@ -31,6 +31,7 @@
  */
 package org.xbib.io.codec.tar;
 
+import org.xbib.io.archive.tar.TarArchiveEntry;
 import org.xbib.io.codec.ArchiveSession;
 import org.xbib.io.archive.tar.TarArchiveInputStream;
 import org.xbib.io.archive.tar.TarArchiveOutputStream;
@@ -38,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class TarSession extends ArchiveSession<TarArchiveInputStream, TarArchiveOutputStream> {
+public class TarSession extends ArchiveSession<TarArchiveEntry, TarArchiveInputStream, TarArchiveOutputStream> {
 
     private final static String SUFFIX = "tar";
 

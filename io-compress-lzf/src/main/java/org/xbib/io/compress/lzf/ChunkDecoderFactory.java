@@ -30,7 +30,7 @@ public class ChunkDecoderFactory {
      */
     public static ChunkDecoder optimalInstance() {
         try {
-            return INSTANCE.implClass.newInstance();
+            return INSTANCE.implClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new IllegalStateException("Failed to load a ChunkDecoder instance (" + e.getClass().getName() + "): "
                     + e.getMessage(), e);

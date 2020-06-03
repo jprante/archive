@@ -1,6 +1,5 @@
 package org.xbib.io.archive.zip;
 
-import org.xbib.io.archive.entry.ArchiveEntry;
 import org.xbib.io.archive.stream.ArchiveInputStream;
 import org.xbib.io.archive.entry.ArchiveEntryEncoding;
 import org.xbib.io.archive.entry.ArchiveEntryEncodingHelper;
@@ -34,7 +33,7 @@ import static org.xbib.io.archive.zip.ZipConstants.ZIP64_MAGIC;
  *
  * @see ZipFile
  */
-public class ZipArchiveInputStream extends ArchiveInputStream {
+public class ZipArchiveInputStream<E extends ZipArchiveEntry> extends ArchiveInputStream<E> {
 
     /**
      * The zip encoding to use for filenames and the file comment.
@@ -252,9 +251,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ArchiveEntry getNextEntry() throws IOException {
-        return getNextZipEntry();
+    public E getNextEntry() throws IOException {
+        return (E) getNextZipEntry();
     }
 
     @Override

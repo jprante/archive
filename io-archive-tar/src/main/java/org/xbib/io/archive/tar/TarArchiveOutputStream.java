@@ -7,7 +7,7 @@ import org.xbib.io.archive.entry.ArchiveEntryEncodingHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * The TarOutputStream writes a UNIX tar archive as an output stream
  */
-public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutputEntry> implements TarConstants {
+public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry> implements TarConstants {
 
     private static final ArchiveEntryEncoding ASCII = ArchiveEntryEncodingHelper.getEncoding("ASCII");
 
@@ -239,8 +239,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
     }
 
     @Override
-    public TarArchiveOutputEntry newArchiveEntry() {
-        return new TarArchiveOutputEntry();
+    public TarArchiveEntry newArchiveEntry() {
+        return new TarArchiveEntry();
     }
 
     /**
@@ -257,7 +257,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
      * @throws ClassCastException  if archiveEntry is not an instance of TarArchiveEntry
      */
     @Override
-    public void putArchiveEntry(TarArchiveOutputEntry archiveEntry) throws IOException {
+    public void putArchiveEntry(TarArchiveEntry archiveEntry) throws IOException {
         if (finished) {
             throw new IOException("Stream has already been finished");
         }
@@ -272,7 +272,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
             } else if (longFileMode == LONGFILE_GNU) {
                 // create a TarEntry for the LongLink, the contents
                 // of which are the entry's name
-                TarArchiveOutputEntry longLinkEntry = new TarArchiveOutputEntry(GNU_LONGLINK, LF_GNUTYPE_LONGNAME);
+                TarArchiveEntry longLinkEntry = new TarArchiveEntry(GNU_LONGLINK, LF_GNUTYPE_LONGNAME);
                 longLinkEntry.setEntrySize(nameBytes.length + 1); // +1 for NUL
                 putArchiveEntry(longLinkEntry);
                 write(nameBytes);
@@ -440,7 +440,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
         if (name.length() >= NAMELEN) {
             name = name.substring(0, NAMELEN - 1);
         }
-        TarArchiveOutputEntry pex = new TarArchiveOutputEntry(name, LF_PAX_EXTENDED_HEADER_LC);
+        TarArchiveEntry pex = new TarArchiveEntry(name, LF_PAX_EXTENDED_HEADER_LC);
         StringWriter w = new StringWriter();
         for (Map.Entry<String, String> h : headers.entrySet()) {
             String key = h.getKey();
@@ -449,7 +449,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
                     + 3 /* blank, equals and newline */
                     + 2 /* guess 9 < actual length < 100 */;
             String line = len + " " + key + "=" + value + "\n";
-            int actualLength = line.getBytes(Charset.forName("UTF-8")).length;
+            int actualLength = line.getBytes(StandardCharsets.UTF_8).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
                 // or where UTF-8 encoding isn't a single octet
@@ -458,11 +458,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
                 // first pass so we'd need a second.
                 len = actualLength;
                 line = len + " " + key + "=" + value + "\n";
-                actualLength = line.getBytes(Charset.forName("UTF-8")).length;
+                actualLength = line.getBytes(StandardCharsets.UTF_8).length;
             }
             w.write(line);
         }
-        byte[] data = w.toString().getBytes(Charset.forName("UTF-8"));
+        byte[] data = w.toString().getBytes(StandardCharsets.UTF_8);
         pex.setEntrySize(data.length);
         putArchiveEntry(pex);
         write(data);
@@ -499,7 +499,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
     }
 
     private void addPaxHeadersForBigNumbers(Map<String, String> paxHeaders,
-                                            TarArchiveOutputEntry entry) {
+                                            TarArchiveEntry entry) {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getEntrySize(), MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getGroupId(), MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "mtime", entry.getLastModified().getTime() / 1000, MAXSIZE);
@@ -519,7 +519,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveOutput
         }
     }
 
-    private void failForBigNumbers(TarArchiveOutputEntry entry) {
+    private void failForBigNumbers(TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getEntrySize(), MAXSIZE);
         failForBigNumber("group id", entry.getGroupId(), MAXID);
         failForBigNumber("last modification time", entry.getLastModified().getTime() / 1000, MAXSIZE);

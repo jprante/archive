@@ -8,18 +8,24 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-
 /**
  * Filter stream that mimics a physical tape drive capable of compressing
  * the data stream
  */
-class TapeInputStream extends FilterInputStream {
+public class TapeInputStream extends FilterInputStream {
+
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
+
     private int currBlkIdx = -1;
+
     private int blockSize = DumpArchiveConstants.TP_SIZE;
+
     private int recordSize = DumpArchiveConstants.TP_SIZE;
+
     private int readOffset = DumpArchiveConstants.TP_SIZE;
+
     private boolean isCompressed = false;
+
     private long bytesRead = 0;
 
     /**

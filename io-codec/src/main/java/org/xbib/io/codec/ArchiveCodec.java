@@ -1,5 +1,6 @@
 package org.xbib.io.codec;
 
+import org.xbib.io.archive.entry.ArchiveEntry;
 import org.xbib.io.archive.stream.ArchiveInputStream;
 import org.xbib.io.archive.stream.ArchiveOutputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.OutputStream;
  * @param <I> the archive input stream type
  * @param <O> the archive output type
  */
-public interface ArchiveCodec<S extends ArchiveSession, I extends ArchiveInputStream, O extends ArchiveOutputStream> {
+public interface ArchiveCodec<E extends ArchiveEntry, I extends ArchiveInputStream<E>, O extends ArchiveOutputStream<E>, S extends ArchiveSession<E, I, O>> {
 
     /**
      * Returns the name of this archive codec ("cpio", "tar", "zip")
@@ -22,14 +23,6 @@ public interface ArchiveCodec<S extends ArchiveSession, I extends ArchiveInputSt
      * @return the name
      */
     String getName();
-
-    /**
-     * Creates a new archive session with a progress watcher.
-     *
-     * @param watcher the progress watcher
-     * @return the new archive session
-     */
-    S newSession(BytesProgressWatcher watcher);
 
     /**
      * Creates a new archive input stream
@@ -49,4 +42,11 @@ public interface ArchiveCodec<S extends ArchiveSession, I extends ArchiveInputSt
      */
     O createArchiveOutputStream(OutputStream out) throws IOException;
 
+    /**
+     * Creates a new archive session with a progress watcher.
+     *
+     * @param watcher the progress watcher
+     * @return the new archive session
+     */
+    S newSession(BytesProgressWatcher watcher);
 }

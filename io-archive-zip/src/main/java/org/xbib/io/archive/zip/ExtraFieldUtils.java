@@ -1,4 +1,3 @@
-
 package org.xbib.io.archive.zip;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class ExtraFieldUtils {
     private static final Map<ZipShort, Class<?>> implementations;
 
     static {
-        implementations = new HashMap<ZipShort, Class<?>>();
+        implementations = new HashMap<>();
         register(AsiExtraField.class);
         register(JarMarker.class);
         register(UnicodePathExtraField.class);
@@ -37,14 +36,10 @@ public class ExtraFieldUtils {
      */
     public static void register(Class<?> c) {
         try {
-            ZipExtraField ze = (ZipExtraField) c.newInstance();
+            ZipExtraField ze = (ZipExtraField) c.getDeclaredConstructor().newInstance();
             implementations.put(ze.getHeaderId(), c);
-        } catch (ClassCastException cc) {
-            throw new RuntimeException(c + " doesn\'t implement ZipExtraField");
-        } catch (InstantiationException ie) {
-            throw new RuntimeException(c + " is not a concrete class");
-        } catch (IllegalAccessException ie) {
-            throw new RuntimeException(c + "\'s no-arg constructor is not public");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -54,14 +49,13 @@ public class ExtraFieldUtils {
      *
      * @param headerId the header identifier
      * @return an instance of the appropiate ExtraField
-     * @throws InstantiationException if unable to instantiate the class
-     * @throws IllegalAccessException if not allowed to instatiate the class
+     * @throws Exception if unable to instantiate the class
      */
     public static ZipExtraField createExtraField(ZipShort headerId)
-            throws InstantiationException, IllegalAccessException {
+            throws Exception {
         Class<?> c = implementations.get(headerId);
         if (c != null) {
-            return (ZipExtraField) c.newInstance();
+            return (ZipExtraField) c.getDeclaredConstructor().newInstance();
         }
         UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(headerId);
@@ -157,7 +151,7 @@ public class ExtraFieldUtils {
                             length);
                 }
                 v.add(ze);
-            } catch (InstantiationException | IllegalAccessException ie) {
+            } catch (Exception ie) {
                 throw new ZipException(ie.getMessage());
             }
             start += (length + WORD);

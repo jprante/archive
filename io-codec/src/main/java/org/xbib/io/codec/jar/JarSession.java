@@ -1,12 +1,13 @@
 package org.xbib.io.codec.jar;
 
+import org.xbib.io.archive.jar.JarArchiveEntry;
 import org.xbib.io.codec.ArchiveSession;
 import org.xbib.io.archive.jar.JarArchiveInputStream;
 import org.xbib.io.archive.jar.JarArchiveOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class JarSession extends ArchiveSession<JarArchiveInputStream, JarArchiveOutputStream> {
+public class JarSession extends ArchiveSession<JarArchiveEntry, JarArchiveInputStream, JarArchiveOutputStream> {
 
     private final static String SUFFIX = "jar";
 

@@ -19,9 +19,9 @@ import java.util.Stack;
  * the archive, and the read each entry as a normal input stream
  * using read().
  */
-public class DumpArchiveInputStream extends ArchiveInputStream {
+public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
 
-    private DumpArchiveSummary summary;
+    private final DumpArchiveSummary summary;
 
     private DumpArchiveEntry active;
 
@@ -35,7 +35,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     private int readIdx;
 
-    private byte[] readBuf = new byte[DumpArchiveConstants.TP_SIZE];
+    private final byte[] readBuf = new byte[DumpArchiveConstants.TP_SIZE];
 
     private byte[] blockBuffer;
 
@@ -46,13 +46,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     protected TapeInputStream raw;
 
     // map of ino -> dirent entry. We can use this to reconstruct full paths.
-    private Map<Integer, Dirent> names = new HashMap<Integer, Dirent>();
+    private final Map<Integer, Dirent> names = new HashMap<Integer, Dirent>();
 
     // map of ino -> (directory) entry when we're missing one or more elements in the path.
-    private Map<Integer, DumpArchiveEntry> pending = new HashMap<Integer, DumpArchiveEntry>();
+    private final Map<Integer, DumpArchiveEntry> pending = new HashMap<Integer, DumpArchiveEntry>();
 
     // queue of (directory) entries where we now have the full path.
-    private Queue<DumpArchiveEntry> queue;
+    private final Queue<DumpArchiveEntry> queue;
 
     /**
      * Constructor.

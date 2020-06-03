@@ -1,4 +1,5 @@
 module org.xbib.io.codec {
+    uses org.xbib.io.codec.StreamCodec;
     exports org.xbib.io.codec;
     exports org.xbib.io.codec.ar;
     exports org.xbib.io.codec.cpio;
@@ -10,11 +11,10 @@ module org.xbib.io.codec {
     requires org.xbib.io.compress.lzf;
     requires org.xbib.io.compress.xz;
     requires org.xbib.io.compress.zlib;
-    requires org.xbib.io.archive;
-    requires org.xbib.io.archive.ar;
-    requires org.xbib.io.archive.cpio;
-    requires org.xbib.io.archive.dump;
-    requires org.xbib.io.archive.jar;
-    requires org.xbib.io.archive.tar;
-    requires org.xbib.io.archive.zip;
+    requires transitive org.xbib.io.archive.ar;
+    requires transitive org.xbib.io.archive.cpio;
+    requires transitive org.xbib.io.archive.dump;
+    requires transitive org.xbib.io.archive.jar;
+    requires transitive org.xbib.io.archive.tar;
+    requires transitive org.xbib.io.archive.zip;
 }

@@ -1,4 +1,3 @@
-
 package org.xbib.io.compress.xz.index;
 
 import org.xbib.io.compress.xz.XZIOException;
@@ -7,11 +6,12 @@ import org.xbib.io.compress.xz.common.EncoderUtil;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 import java.util.zip.CheckedOutputStream;
 
 public class IndexEncoder extends IndexBase {
-    private final ArrayList records = new ArrayList();
+
+    private final List<IndexRecord> records = new ArrayList<>();
 
     public IndexEncoder() {
         super(new XZIOException("XZ Stream or its Index has grown too big"));
@@ -34,8 +34,7 @@ public class IndexEncoder extends IndexBase {
         EncoderUtil.encodeVLI(outChecked, recordCount);
 
         // List of Records
-        for (Iterator i = records.iterator(); i.hasNext(); ) {
-            IndexRecord record = (IndexRecord) i.next();
+        for (IndexRecord record : records) {
             EncoderUtil.encodeVLI(outChecked, record.unpadded);
             EncoderUtil.encodeVLI(outChecked, record.uncompressed);
         }
