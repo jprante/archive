@@ -24,7 +24,6 @@ import java.util.Date;
  * can read but not write the GNU variant and doesn't support
  * the BSD variant at all.
  *
- * <a href="http://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5">ar man page</a>
  */
 public class ArArchiveEntry implements ArchiveEntry {
 

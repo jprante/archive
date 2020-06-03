@@ -27,6 +27,7 @@ public class ArConnection extends URLConnection implements Connection<ArSession>
      * the object referenced by the URL is not created.
      *
      * @param url the specified URL.
+     * @throws URISyntaxException if URI is invalid
      */
     public ArConnection(URL url) throws URISyntaxException {
         super(url);
