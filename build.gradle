@@ -11,7 +11,7 @@ wrapper {
 ext {
     user = 'xbib'
     name = 'archive'
-    description = 'Archive algorithms for Java'
+    description = 'Archive formats for Java'
     inceptionYear = '2016'
     url = 'https://github.com/' + user + '/' + name
     scmUrl = 'https://github.com/' + user + '/' + name
@@ -26,6 +26,7 @@ ext {
 subprojects {
     apply plugin: 'java-library'
     apply from: rootProject.file('gradle/ide/idea.gradle')
+    apply from: rootProject.file('gradle/repositories/maven.gradle')
     apply from: rootProject.file('gradle/compile/java.gradle')
     apply from: rootProject.file('gradle/test/junit5.gradle')
     apply from: rootProject.file('gradle/publishing/publication.gradle')
