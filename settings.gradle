@@ -1,3 +1,4 @@
+include 'io-compress-bgzf'
 include 'io-compress-bzip2'
 include 'io-compress-lzf'
 include 'io-compress-xz'

@@ -1,5 +1,6 @@
 dependencies {
     api project(':io-archive')
+    implementation project(':io-compress-bgzf')
     implementation project(':io-compress-bzip2')
     implementation project(':io-compress-lzf')
     implementation project(':io-compress-xz')

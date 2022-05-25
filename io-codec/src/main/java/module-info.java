@@ -2,11 +2,13 @@ module org.xbib.io.codec {
     uses org.xbib.io.codec.StreamCodec;
     exports org.xbib.io.codec;
     exports org.xbib.io.codec.ar;
+    exports org.xbib.io.codec.bgzf;
     exports org.xbib.io.codec.cpio;
     exports org.xbib.io.codec.file;
     exports org.xbib.io.codec.jar;
     exports org.xbib.io.codec.tar;
     exports org.xbib.io.codec.zip;
+    requires transitive org.xbib.io.compress.bgzf;
     requires org.xbib.io.compress.bzip;
     requires org.xbib.io.compress.lzf;
     requires org.xbib.io.compress.xz;
