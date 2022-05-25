@@ -9,7 +9,7 @@ public class ZipTest {
     @Test
     public void testZip() throws Exception {
         InputStream in = getClass().getResourceAsStream("test.zip");
-        ZipArchiveInputStream z = new ZipArchiveInputStream(in);
+        ZipArchiveInputStream<ZipArchiveEntry> z = new ZipArchiveInputStream<>(in);
         byte[] buffer = new byte[1024];
         long total = 0L;
         while ((z.getNextEntry()) != null) {
